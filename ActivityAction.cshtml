@@ -1,0 +1,121 @@
+﻿@functions {
+
+    public object processActivity(string connectionString, string activity) {
+
+        try {
+
+            var db = Database.Open(connectionString);
+
+            //db.Connection.Open();
+
+            // check if activity already scheduled
+	        var sql = "select 1 from impexp_schedule where activity=@0 and schedule_type='One Time'";
+
+            var schedule = db.QuerySingle(sql, activity);
+
+            if (schedule != null) {
+		        return new {status = "error", message = "Activity "+activity+"' already scheduled as One Time."};
+	        }
+
+            //var trans = db.Connection.BeginTransaction();
+
+	        sql = "insert into impexp_schedule (activity,schedule_date,schedule_type,activity_subtype,group_name,create_date,created_by) "
+		         + " values (@0,current_timestamp,'One Time','','EC',current_timestamp,'SYSTEM')";
+
+            
+            db.Execute(sql, activity);
+
+            //trans.Commit();
+
+            db.Close();
+
+            return new {status = "ok", message = ""};
+        }
+
+        catch (Exception e) {
+            return new {status = "error", message = e.Message};
+        }
+    
+    }
+
+
+    public object resetActivity(string connectionString, string activity) {
+
+        try {
+
+            var db = Database.Open(connectionString);
+
+    	    db.Execute("update impexp_activities set status=0 where activity=@0 and status in (2,5,1)", activity);
+
+            db.Close();
+
+            return new {status = "ok", message = ""};
+        }
+
+        catch (Exception e) {
+            return new {status = "error", message = e.Message};
+        }
+
+    }
+
+    public object disableActivity(string connectionString, string activity) {
+
+        try {
+
+            var db = Database.Open(connectionString);
+
+    	    db.Execute("update impexp_activities set status=2 where activity=@0 and status in (0, 5)", activity);
+
+            db.Close();
+
+            return new {status = "ok", message = ""};
+        }
+
+        catch (Exception e) {
+            return new {status = "error", message = e.Message};
+        }
+
+    }
+
+    public object stopActivity(string connectionString, string activity) {
+        
+        try {
+
+            var db = Database.Open(connectionString);
+
+    	    db.Execute("update impexp_activities set status=3 where activity=@0 and status=1", activity);
+
+            db.Close();
+
+            return new {status = "ok", message = ""};
+        }
+
+        catch (Exception e) {
+            return new {status = "error", message = e.Message};
+        }
+
+    }
+
+}
+
+@{
+
+Response.ContentType = "text/json";
+
+string action = Request["action"].ToString();
+string activity = Request["activity"].ToString();
+//string connectionString = Session["connectionString"].ToString();
+string connectionString = "pm91";
+object result = new {};
+
+switch (action) {
+        case "process": result = processActivity(connectionString, activity); break;
+        case "reset":   result = resetActivity(connectionString, activity); break;
+        case "disable": result = disableActivity(connectionString, activity); break;
+        case "stop":    result = stopActivity(connectionString, activity); break;
+}
+
+Response.Write(Json.Encode(result));
+
+}
+

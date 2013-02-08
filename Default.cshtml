@@ -1,0 +1,75 @@
+﻿@{
+    Layout = "~/_Layout.cshtml";
+}
+
+
+@{
+string connectionString = "pm91";
+foreach (var config in System.Configuration.ConfigurationManager.ConnectionStrings) {
+    if (connectionString == "") {
+        connectionString = config.ToString();
+    }
+}
+
+Session["connectionString"] = connectionString;
+
+var db = Database.Open(connectionString) ;
+var selectCommand = "select activity,status,bitmap FROM impexp_activities order by activity";
+var selectedData = db.Query(selectCommand);
+
+db.Close();
+
+string imageName = "";
+string status="", displayStatus = "";
+}
+
+<div class="list-container row-fluid">
+
+    <div class="activity-list span4">
+
+        <div id="navlistbar">
+            <ul id="navlist">
+                <li><a id="process" href="#">Process</a></li>
+                <li><a id="stop" href="#">Stop</a></li>
+                <li><a id="disable" href="#">Disable</a></li>
+                <li><a id="reset" href="#">Reset</a></li>
+            </ul>
+        </div>
+
+        <table class="list">
+            <thead>
+                <tr><th>Type</th><th>Name</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+            @{
+                foreach (var rec in selectedData) {
+
+                    imageName = rec["bitmap"].Replace(".gif", ".png");
+
+                    displayStatus = ActivityStatusDisplay.Convert(rec["status"]);
+
+                    <tr><td><img src="/Images/@imageName" alt="Type"></td><td data-itemtype="activity">@rec["activity"]</td><td data-itemtype="status">@displayStatus</td></tr>
+                }
+
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="activity-tab-container span8">
+        <table id="tabs">
+            <tr>
+                <td id="t1" class="headertabactive"><a class="headermenu" href="javascript:showActivityParameters()">Parameters</a></td>
+                <td id="t2" class="headertaboff"><a class="headermenu" href="javascript:showActivityLog()">Log</a></td>
+                <td id="t3" class="headertaboff"><a class="headermenu" href="javascript:showActivitySchedule()">Schedule</a></td>
+                <td id="t4" class="headertaboff"><a class="headermenu" href="javascript:showActivityEmail()">Email</a></td>
+                <td id="t5" class="headertaboff"><a class="headermenu" href="javascript:showImportRules()">Import Rules</a></td>
+                <td id="t6" class="headertaboff"><a class="headermenu" href="javascript:showImportData()">Import Data</a></td>
+            </tr>
+        </table>
+        <div id='activity_detail'></div>
+    </div>
+
+</div>
+
+<script type="text/javascript" src="~/Scripts/activity.js"></script>
