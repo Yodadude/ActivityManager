@@ -13,7 +13,7 @@ foreach (var config in System.Configuration.ConfigurationManager.ConnectionStrin
 
 Session["connectionString"] = connectionString;
 
-var db = Database.Open(connectionString) ;
+var db = Database.Open(Session["connectionString"].ToString()) ;
 var selectCommand = "select activity,status,bitmap FROM impexp_activities order by activity";
 var selectedData = db.Query(selectCommand);
 
@@ -72,4 +72,4 @@ string status="", displayStatus = "";
 
 </div>
 
-<script type="text/javascript" src="~/Scripts/activity.js"></script>
+<script type="text/javascript" src="~/Scripts/activity.js?x=5"></script>

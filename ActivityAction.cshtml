@@ -6,8 +6,6 @@
 
             var db = Database.Open(connectionString);
 
-            //db.Connection.Open();
-
             // check if activity already scheduled
 	        var sql = "select 1 from impexp_schedule where activity=@0 and schedule_type='One Time'";
 

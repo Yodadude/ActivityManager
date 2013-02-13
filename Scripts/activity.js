@@ -18,13 +18,13 @@ $(function () {
         );
 
     $("#process").click(function () {
-        var activity = getActivityStatus();
-        if (activity.status != "") {
+        var activityInfo = getActivityStatus();
+        if (activityInfo.status != "") {
             alert("Process not allowed as activity in incorrect state.");
             return;
         }
         $.post('ActivityAction.cshtml', {
-            activity: activity.activity,
+            activity: activityInfo.activity,
             action: 'process'
         }, function (data) {
             if (data.status == "error") {
@@ -35,15 +35,15 @@ $(function () {
         });
     });
 
-    
+
     $("#reset").click(function () {
-        var activity = getActivityStatus();
-        if (activity.status != "") {
+        var activityInfo = getActivityStatus();
+        if (activityInfo.status == "") {
             alert("Reset not allowed.");
             return;
         }
         $.post('ActivityAction.cshtml', {
-            activity: activity.activity,
+            activity: activityInfo.activity,
             action: 'reset'
         }, function (data) {
             if (data.status == "error") {
@@ -54,29 +54,45 @@ $(function () {
         });
     });
 
-    /*
+
     $("#stop").click(function () {
-    var s_status = $("table#actlist tr td:contains(" + s_activity + ")").next("td").html();
-    if (s_status != "Running") {
-    alert("Stop not allowed as activity is not running.");
-    return;
-    }
-    $.post('activity_action.asp', {
-    activity: s_activity,
-    action: 'stop'
-    }, function (text) { });
+        var activityInfo = getActivityStatus();
+        if (activityInfo.status != "Running") {
+            alert("Stop not allowed as activity is not running.");
+            return;
+        }
+        $.post('ActivityAction.cshtml', {
+            activity: activityInfo.activity,
+            action: 'stop'
+        }, function (text) {
+        });
     });
 
-    $("#disable").click(function () {
-    $.post('activity_action.asp', {
-    activity: s_activity,
-    action: 'disable'
-    }, function (text) {
-    $("table#actlist tr td:contains(" + s_activity + ")").next("td").html("Disabled")
-    });
-    });
-    */
+
+    $("#disable").click(disableActivity);
+
 });
+
+function disableActivity() {
+
+    var activityInfo = getActivityStatus();
+
+    if (activityInfo.status != "") {
+        alert("Disable not allowed as activity is not in required state.");
+        return;
+    }
+
+    $.post('ActivityAction.cshtml', {
+        activity: activityInfo.activity,
+        action: 'disable'
+    }, function (text) {
+        alert(activityInfo.activity + " has been disabled.");
+        //$("table#list tr td:contains(" + activityInfo.activity + ")").next("td").text("Disabled")
+        $("table.list tr.select td:last-child()").text("Disabled");
+    });
+
+}
+
 
 function getActivityStatus() {
     
