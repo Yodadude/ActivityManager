@@ -67,9 +67,30 @@ table#tabs {
     td {text-align: center; white-space: nowrap;}
 }
 
+table.list tr td:last-child {font-weight: bold;}
+table.list tbody {min-height: 500px; overflow: auto;}
 
-header,.header,#header{
-  background: red;
-  color: white;
-  font-size: 15px;
+div#fly-open {
+	border: 1px solid #8f8f8f;
+	border-bottom: none;
+	position:fixed;
+	bottom:0px;
+	width:60%;
+	padding: 0;
+	margin: 0 20% 0 20%;
+	z-index:100;
+
+	div#fly-open-title {
+		color:white;
+		background-color:deepskyblue;
+		line-height: 160%;
+		width:100%;
+		cursor: pointer;
+		font-weight:bold;
+		text-align:center;
+	}
+	div#fly-open-content {
+		padding: 5px;
+		display: none;
+	}
 }

@@ -1,6 +1,14 @@
 
 $(function () {
 
+    $("#activity-tabs a:first").tab("show");
+
+    //$('ul#activity-tabs a[data-toggle="tab"]').on('shown', function (e) {
+    //    e.target // activated tab
+    //    e.relatedTarget // previous tab
+    //    // alert(e.target);
+    //});
+
     $("table.list tbody tr")
         .hover(
             function () {
@@ -14,68 +22,86 @@ $(function () {
             function () {
                 $("tr.select").removeClass("select");
                 $(this).addClass("select");
+                activitySelected();
             }
         );
 
-    $("#process").click(function () {
-        var activityInfo = getActivityStatus();
-        if (activityInfo.status != "") {
-            alert("Process not allowed as activity in incorrect state.");
-            return;
-        }
-        $.post('ActivityAction.cshtml', {
-            activity: activityInfo.activity,
-            action: 'process'
-        }, function (data) {
-            if (data.status == "error") {
-                alert(data.message);
-                return;
-            }
-            //showActivitySchedule()
-        });
-    });
-
-
-    $("#reset").click(function () {
-        var activityInfo = getActivityStatus();
-        if (activityInfo.status == "") {
-            alert("Reset not allowed.");
-            return;
-        }
-        $.post('ActivityAction.cshtml', {
-            activity: activityInfo.activity,
-            action: 'reset'
-        }, function (data) {
-            if (data.status == "error") {
-                alert(data.message);
-                return;
-            }
-            $("table.list tr.select td:last-child()").text("");
-        });
-    });
-
-
-    $("#stop").click(function () {
-        var activityInfo = getActivityStatus();
-        if (activityInfo.status != "Running") {
-            alert("Stop not allowed as activity is not running.");
-            return;
-        }
-        $.post('ActivityAction.cshtml', {
-            activity: activityInfo.activity,
-            action: 'stop'
-        }, function (text) {
-        });
-    });
-
-
+    $("#process").click(processActivity);
+    $("#reset").click(resetActivity);
+    $("#stop").click(stopActivity);
     $("#disable").click(disableActivity);
 
 });
 
+function activitySelected() {
+   var activityInfo = getActivityInfo();
+   $("#activity-tabs a:first").tab("show");
+}
+
+
+function processActivity() {
+
+    var activityInfo = getActivityInfo();
+    
+    if (activityInfo.status != "") {
+        alert("Process not allowed as activity in incorrect state.");
+        return;
+    }
+    
+    $.post('ActivityAction.cshtml', {
+        activity: activityInfo.activity,
+        action: 'process'
+    }, function (data) {
+        if (data.status == "error") {
+            alert(data.message);
+            return;
+        }
+        //showActivitySchedule()
+    });
+}
+
+function stopActivity() {
+
+    var activityInfo = getActivityInfo();
+
+    if (activityInfo.status != "Running") {
+        alert("Stop not allowed as activity is not running.");
+        return;
+    }
+    
+    $.post('ActivityAction.cshtml', {
+        activity: activityInfo.activity,
+        action: 'stop'
+    }, function (text) {
+    });
+
+}
+
+function resetActivity() {
+
+    var activityInfo = getActivityInfo();
+
+    if (activityInfo.status == "") {
+        alert("Reset not allowed.");
+        return;
+    }
+
+    $.post('ActivityAction.cshtml', {
+        activity: activityInfo.activity,
+        action: 'reset'
+    }, function (data) {
+        if (data.status == "error") {
+            alert(data.message);
+            return;
+        }
+        $("table.list tr.select td:last-child()").text("");
+    });
+
+}
+
 function disableActivity() {
 
-    var activityInfo = getActivityStatus();
+    var activityInfo = getActivityInfo();
 
     if (activityInfo.status != "") {
         alert("Disable not allowed as activity is not in required state.");
@@ -86,15 +112,12 @@ function disableActivity() {
         activity: activityInfo.activity,
         action: 'disable'
     }, function (text) {
-        alert(activityInfo.activity + " has been disabled.");
-        //$("table#list tr td:contains(" + activityInfo.activity + ")").next("td").text("Disabled")
-        $("table.list tr.select td:last-child()").text("Disabled");
+        $("table.list tr.select td:last-child").text("Disabled");
     });
 
 }
 
-
-function getActivityStatus() {
+function getActivityInfo() {
     
     var s_activity = $("table.list tr.select td:nth-child(2)").text();
     var s_status = $("table.list tr.select td:nth-child(3)").text();

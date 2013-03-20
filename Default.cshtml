@@ -2,38 +2,34 @@
     Layout = "~/_Layout.cshtml";
 }
 
-
 @{
-string connectionString = "pm91";
-foreach (var config in System.Configuration.ConfigurationManager.ConnectionStrings) {
-    if (connectionString == "") {
-        connectionString = config.ToString();
-    }
+
+IEnumerable<dynamic> selectedData = null;
+
+Session["connectionString"] = "pm94";
+
+if (Session["connectionString"] != null)
+{
+    var db = Database.Open(Session["connectionString"].ToString()) ;
+    var selectCommand = "select activity,status,bitmap FROM impexp_activities order by activity";
+    selectedData = db.Query(selectCommand);
+    db.Close();
 }
 
-Session["connectionString"] = connectionString;
-
-var db = Database.Open(Session["connectionString"].ToString()) ;
-var selectCommand = "select activity,status,bitmap FROM impexp_activities order by activity";
-var selectedData = db.Query(selectCommand);
-
-db.Close();
-
-string imageName = "";
-string status="", displayStatus = "";
 }
 
 <div class="list-container row-fluid">
 
     <div class="activity-list span4">
-
-        <div id="navlistbar">
-            <ul id="navlist">
-                <li><a id="process" href="#">Process</a></li>
-                <li><a id="stop" href="#">Stop</a></li>
-                <li><a id="disable" href="#">Disable</a></li>
-                <li><a id="reset" href="#">Reset</a></li>
-            </ul>
+        <div class="navbar">
+            <div class="navbar-inner">
+                <ul class="nav">
+                    <li><a id="process" href="#">Process</a></li>
+                    <li><a id="stop" href="#">Stop</a></li>
+                    <li><a id="disable" href="#">Disable</a></li>
+                    <li><a id="reset" href="#">Reset</a></li>
+                </ul>
+            </div>
         </div>
 
         <table class="list">
@@ -44,9 +40,9 @@ string status="", displayStatus = "";
             @{
                 foreach (var rec in selectedData) {
 
-                    imageName = rec["bitmap"].Replace(".gif", ".png");
+                    var imageName = rec["bitmap"].Replace(".gif", ".png");
 
-                    displayStatus = ActivityStatusDisplay.Convert(rec["status"]);
+                    var displayStatus = ActivityStatusDisplay.Convert(rec["status"]);
 
                     <tr><td><img src="/Images/@imageName" alt="Type"></td><td data-itemtype="activity">@rec["activity"]</td><td data-itemtype="status">@displayStatus</td></tr>
                 }
@@ -57,17 +53,25 @@ string status="", displayStatus = "";
     </div>
 
     <div class="activity-tab-container span8">
-        <table id="tabs">
-            <tr>
-                <td id="t1" class="headertabactive"><a class="headermenu" href="javascript:showActivityParameters()">Parameters</a></td>
-                <td id="t2" class="headertaboff"><a class="headermenu" href="javascript:showActivityLog()">Log</a></td>
-                <td id="t3" class="headertaboff"><a class="headermenu" href="javascript:showActivitySchedule()">Schedule</a></td>
-                <td id="t4" class="headertaboff"><a class="headermenu" href="javascript:showActivityEmail()">Email</a></td>
-                <td id="t5" class="headertaboff"><a class="headermenu" href="javascript:showImportRules()">Import Rules</a></td>
-                <td id="t6" class="headertaboff"><a class="headermenu" href="javascript:showImportData()">Import Data</a></td>
-            </tr>
-        </table>
-        <div id='activity_detail'></div>
+
+        <ul id="activity-tabs" class="nav nav-tabs">
+            <li><a href="#parameters" class="active" data-toggle="tab">Parameters</a></li>
+            <li><a href="#log" data-toggle="tab">Log</a></li>
+            <li><a href="#schedule" data-toggle="tab">Schedule</a></li>
+            <li><a href="#email" data-toggle="tab">Email</a></li>
+            <li><a href="#importrules" data-toggle="tab">Import Rules</a></li>
+            <li><a href="#importdata" data-toggle="tab">Import Data</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="parameters">parameters</div>
+            <div class="tab-pane" id="log">log</div>
+            <div class="tab-pane" id="schedule">shedule</div>
+            <div class="tab-pane" id="email">email</div>
+            <div class="tab-pane" id="importrules">import rules</div>
+            <div class="tab-pane" id="importdata">import data</div>
+        </div>
+
     </div>
 
 </div>
