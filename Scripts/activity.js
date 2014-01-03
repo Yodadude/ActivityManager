@@ -30,8 +30,13 @@ $(function () {
     $("#reset").click(resetActivity);
     $("#stop").click(stopActivity);
     $("#disable").click(disableActivity);
-
+    $("#connection-list a").click(changeConnection);
 });
+
+function changeConnection() {
+    var conn = $(this).text();
+    window.open("Default.cshtml?conn=" + window.encodeURIComponent(conn), "_this");
+}
 
 function activitySelected() {
    var activityInfo = getActivityInfo();

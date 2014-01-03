@@ -29,10 +29,11 @@
                             Connection
                             <span class="caret"></span>
                          </a>
-                         <ul class="dropdown-menu">
+                         <ul id="connection-list" class="dropdown-menu">
                              @Html.Raw(Helpers.ConnectionLinks())
                          </ul>
                     </div>
+                    @Session["connectionString"]
                  </div>
                 </div>
             </div>

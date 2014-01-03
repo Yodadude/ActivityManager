@@ -12,7 +12,7 @@ public static class Helpers
 
         for (int i = 0; i < System.Configuration.ConfigurationManager.ConnectionStrings.Count; i++)
         {
-            html.Append(@"<li><a href="">");
+            html.Append(@"<li><a target='_self' href='#'>");
         	html.Append(@System.Configuration.ConfigurationManager.ConnectionStrings[i].Name);
             html.Append(@"</a></li>");
         }

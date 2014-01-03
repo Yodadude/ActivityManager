@@ -94,6 +94,25 @@
 
     }
 
+    public object changeConnection(string connectionString) {
+        
+        try {
+
+            var db = Database.Open(connectionString);
+
+    	    db.Execute("update impexp_activities set status=3 where activity=@0 and status=1", activity);
+
+            db.Close();
+
+            return new {status = "ok", message = ""};
+        }
+
+        catch (Exception e) {
+            return new {status = "error", message = e.Message};
+        }
+
+    }
+
 }
 
 @{
@@ -107,10 +126,11 @@ string connectionString = "pm91";
 object result = new {};
 
 switch (action) {
-        case "process": result = processActivity(connectionString, activity); break;
-        case "reset":   result = resetActivity(connectionString, activity); break;
-        case "disable": result = disableActivity(connectionString, activity); break;
-        case "stop":    result = stopActivity(connectionString, activity); break;
+        case "process":          result = processActivity(connectionString, activity); break;
+        case "reset":            result = resetActivity(connectionString, activity); break;
+        case "disable":          result = disableActivity(connectionString, activity); break;
+        case "stop":             result = stopActivity(connectionString, activity); break;
+        case "changeconnection": result = changeConnection(connectionString); break;
 }
 
 Response.Write(Json.Encode(result));

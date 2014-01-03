@@ -6,14 +6,23 @@
 
 IEnumerable<dynamic> selectedData = null;
 
-Session["connectionString"] = "pm94";
+var conn = Request.QueryString["conn"];
 
-if (Session["connectionString"] != null)
+if (conn == null && Session["connectionString"] != null) 
 {
-    var db = Database.Open(Session["connectionString"].ToString()) ;
+  conn = Session["connectionString"].ToString();  
+} 
+
+//if (Session["connectionString"] != null)
+if (!String.IsNullOrEmpty(conn))
+{
+    //var db = Database.Open(Session["connectionString"].ToString()) ;
+    Session["connectionString"] = conn;
+    var db = Database.Open(conn) ;
     var selectCommand = "select activity,status,bitmap FROM impexp_activities order by activity";
     selectedData = db.Query(selectCommand);
     db.Close();
+
 }
 
 }
@@ -38,13 +47,16 @@ if (Session["connectionString"] != null)
             </thead>
             <tbody>
             @{
-                foreach (var rec in selectedData) {
+                if (selectedData != null)
+                {
+                    foreach (var rec in selectedData) {
 
-                    var imageName = rec["bitmap"].Replace(".gif", ".png");
+                        var imageName = rec["bitmap"].Replace(".gif", ".png");
 
-                    var displayStatus = ActivityStatusDisplay.Convert(rec["status"]);
+                        var displayStatus = ActivityStatusDisplay.Convert(rec["status"]);
 
-                    <tr><td><img src="/Images/@imageName" alt="Type"></td><td data-itemtype="activity">@rec["activity"]</td><td data-itemtype="status">@displayStatus</td></tr>
+                        <tr><td><img src="/Images/@imageName" alt="Type"></td><td data-itemtype="activity">@rec["activity"]</td><td data-itemtype="status">@displayStatus</td></tr>
+                    }
                 }
 
             }
