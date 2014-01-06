@@ -35,7 +35,12 @@ $(function () {
 
 function changeConnection() {
     var conn = $(this).text();
-    window.open("Default.cshtml?conn=" + window.encodeURIComponent(conn), "_this");
+    var days = 2;
+    var date = new Date();
+	date.setTime(date.getTime()+(days*24*60*60*1000));
+
+	document.cookie = 'conn=' + conn + '; expires=' + date.toGMTString() + '; path=/';
+    document.location.reload();
 }
 
 function activitySelected() {
@@ -85,7 +90,7 @@ function stopActivity() {
 function resetActivity() {
 
     var activityInfo = getActivityInfo();
-
+    
     if (activityInfo.status == "") {
         alert("Reset not allowed.");
         return;

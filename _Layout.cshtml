@@ -17,6 +17,11 @@
     <script type="text/javascript" src="~/Scripts/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="~/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="~/Scripts/less-1.3.1.min.js"></script>
+      <script>
+          $(function () {
+              $("#connid").text(document.cookie["conn"]);
+          });
+      </script>
   </head>
   <body>
     <div id="container">
@@ -33,7 +38,7 @@
                              @Html.Raw(Helpers.ConnectionLinks())
                          </ul>
                     </div>
-                    @Session["connectionString"]
+                    <span id="connid"></span>
                  </div>
                 </div>
             </div>

@@ -2,27 +2,30 @@
     Layout = "~/_Layout.cshtml";
 }
 
+@functions {
+    
+    public string GetConnectionStringName()
+    {
+
+        var cookie = Request.Cookies["conn"];
+        return cookie != null ? cookie.Value : "";
+
+    }
+
+}
+
 @{
 
 IEnumerable<dynamic> selectedData = null;
 
-var conn = Request.QueryString["conn"];
+var conn = GetConnectionStringName();
 
-if (conn == null && Session["connectionString"] != null) 
-{
-  conn = Session["connectionString"].ToString();  
-} 
-
-//if (Session["connectionString"] != null)
 if (!String.IsNullOrEmpty(conn))
 {
-    //var db = Database.Open(Session["connectionString"].ToString()) ;
-    Session["connectionString"] = conn;
-    var db = Database.Open(conn) ;
+    var db = Database.Open(conn);
     var selectCommand = "select activity,status,bitmap FROM impexp_activities order by activity";
     selectedData = db.Query(selectCommand);
     db.Close();
-
 }
 
 }
